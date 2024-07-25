@@ -18,7 +18,7 @@ headers=[]
 partOutput=[]
 
 
-# Run for 05 seconds
+# Run for 5 seconds
 while time.time()<(timerTime+5):
 # while True:
     success, img= cap.read()
@@ -119,7 +119,4 @@ print("HEADERS:",headers)
 # print("OUTPUT:",finalOutput)
 print("\n\nFrames Captured =",len(finalOutput))
 # left is 0, right is 1
-
-
-character = input("Enter the character: ").upper()
-cl.dwrite(headers,finalOutput,"./trainingData/{}.csv".format(character))
+cl.dwrite(headers,finalOutput,"./trainingData/test2.csv")

@@ -15,10 +15,9 @@ cTime = 0
 timerTime = time.time()
 output = []
 headers=[]
-partOutput=[]
 
 
-# Run for 05 seconds
+# Run for 5 seconds
 while time.time()<(timerTime+5):
 # while True:
     success, img= cap.read()
@@ -27,6 +26,7 @@ while time.time()<(timerTime+5):
     imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     results = hands.process(imgRGB)
     
+    partOutput=[]
     halfList1 = []
     halfList2 = []
     qtrList = []
@@ -82,44 +82,22 @@ while time.time()<(timerTime+5):
     cv2.waitKey(1)
     # time.sleep(2)
 
-#creating headers list for csv
-from decimal import Decimal
 for i in range(2):
     for j in range(21):
-        # print(j)
-        headers.append(round(i+Decimal(j/100),2))
+        headers.append(i+(j/1000))
 
-
-#removing empty lists from output
+for i in range (len(halfList1)): 
+    partOutput=[]
+    for j in range(len(halfList2[i])):
+        partOutput.append([halfList1[i]+(halfList2[i][j][0]/100),halfList2[i][j][1],halfList2[i][j][2],])  
+    output.append(partOutput)
+# print("HEADERS:",headers)
 i=0
 while (i<len(output)):
     if output[i] != []:
-        # print("\n\nOUTPUT: ",output[i])
+        print("\n\nOUTPUT: ",output[i])
         i+=1
     else:
         output.pop(i)
-        # print(str(i)+"/"+str(len(output)))
-
-finalOutput = []
-#converting output to the perfect dictionary wali list
-for i in range(len(partOutput)):
-    # print(output[i].keys())
-    tempDict={}
-    for j in partOutput[i].keys():
-        for k in partOutput[i][j]:
-            # print(round(j+Decimal(k[0]/100),2),k[1:])
-            tempDict[round(j+Decimal(k[0]/100),2)] = k[1:]
-
-    #creating dict of one frame and appending it here            
-    finalOutput.append(tempDict)
-
-
-#printing headers, output        
-print("HEADERS:",headers)
-# print("OUTPUT:",finalOutput)
-print("\n\nFrames Captured =",len(finalOutput))
-# left is 0, right is 1
-
-
-character = input("Enter the character: ").upper()
-cl.dwrite(headers,finalOutput,"./trainingData/{}.csv".format(character))
+    # print(str(i)+"/"+str(len(output)))
+print("\n\nFrames Captured =",len(output))

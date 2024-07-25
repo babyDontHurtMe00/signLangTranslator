@@ -1,7 +1,7 @@
 import mediapipe as mp
 import cv2
 import time
-import csvLibrary as cl
+# import csvLibrary as cl
 # cl.info()
 
 cap = cv2.VideoCapture(0)
@@ -14,19 +14,17 @@ pTime = 0
 cTime = 0
 timerTime = time.time()
 output = []
-headers=[]
-partOutput=[]
 
-
-# Run for 05 seconds
-while time.time()<(timerTime+5):
-# while True:
+# Run for 10 seconds
+# while time.time()<(timerTime+10):
+while True:
     success, img= cap.read()
     img=cv2.flip(img,1)
     # cv2.imshow("showing live feed",success)
     imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     results = hands.process(imgRGB)
     
+    partOutput=[]
     halfList1 = []
     halfList2 = []
     qtrList = []
@@ -53,18 +51,21 @@ while time.time()<(timerTime+5):
                 #print(id,lm) #this gives position (as a fraction of img) for each pt
                 height,width,channel = img.shape #finding img parameters to multiply to lm to get coordinate 
                 cx,cy = int(lm.x*width), int(lm.y*height)
-                qtrList.append([id,cx,cy])
-                # if id==4 or id==3:
+                # qtrList.append({id: {"x":cx,"y":cy}})
+                if id==4 or id==3:
                     # print(id, cx,cy)
-                    # qtrList.append([id,cx,cy])
+                    qtrList.append([id,cx,cy])
             
             
             halfList2.append(qtrList)
         #this area is after a frame
-        # print(halfList1)
-        # print(halfList2)
-        # print("\n\n\n")
-    
+        print(halfList1)
+        print(halfList2)
+        print("\n\n\n")
+        # for i in range (len(halfList1)): 
+        #     for i in range(len(halfList2[i])):
+        #         output.append([halfList1[i]+(halfList2[i]/1000),halfList2[i][1],])  #********************  EDITING  HERE  ***********************************
+                
 
         partOutput.append(dict(zip(halfList1,halfList2)))   
     output.append(partOutput)
@@ -76,50 +77,10 @@ while time.time()<(timerTime+5):
     fps = 1/(cTime-pTime)
     pTime= cTime
     cv2.putText(img,str(int(fps)),(10,70),cv2.FONT_HERSHEY_COMPLEX,2,(255,0,255),3)
-    cv2.putText(img,str(int(5-(time.time()-timerTime))),(540,70),cv2.FONT_HERSHEY_COMPLEX,2,(255,0,255),3)
+    cv2.putText(img,str(int(10-(time.time()-timerTime))),(540,70),cv2.FONT_HERSHEY_COMPLEX,2,(255,0,255),3)
 
     cv2.imshow("Image",img)
     cv2.waitKey(1)
     # time.sleep(2)
 
-#creating headers list for csv
-from decimal import Decimal
-for i in range(2):
-    for j in range(21):
-        # print(j)
-        headers.append(round(i+Decimal(j/100),2))
-
-
-#removing empty lists from output
-i=0
-while (i<len(output)):
-    if output[i] != []:
-        # print("\n\nOUTPUT: ",output[i])
-        i+=1
-    else:
-        output.pop(i)
-        # print(str(i)+"/"+str(len(output)))
-
-finalOutput = []
-#converting output to the perfect dictionary wali list
-for i in range(len(partOutput)):
-    # print(output[i].keys())
-    tempDict={}
-    for j in partOutput[i].keys():
-        for k in partOutput[i][j]:
-            # print(round(j+Decimal(k[0]/100),2),k[1:])
-            tempDict[round(j+Decimal(k[0]/100),2)] = k[1:]
-
-    #creating dict of one frame and appending it here            
-    finalOutput.append(tempDict)
-
-
-#printing headers, output        
-print("HEADERS:",headers)
-# print("OUTPUT:",finalOutput)
-print("\n\nFrames Captured =",len(finalOutput))
-# left is 0, right is 1
-
-
-character = input("Enter the character: ").upper()
-cl.dwrite(headers,finalOutput,"./trainingData/{}.csv".format(character))
+print(output)

@@ -104,7 +104,5 @@ def dread(dest):
     data = list()    
     for i in dr:        
         data.append(dict(i))
-    for i in data:
-        print(i)
     f.close()
     return data
